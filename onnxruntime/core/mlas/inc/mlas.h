@@ -89,15 +89,11 @@ Abstract:
 
 #if (!defined(_MSC_VER)) || (_MSC_VER >= 1930)
 #if defined(MLAS_TARGET_ARM64) || defined(MLAS_TARGET_ARM64EC)
-#if !defined(__APPLE__)
-// Had to temporary disable fp16 under APPLE ARM64, as compiling
-// the source files require a hardware specific compilation flag.
-// When building an universial binary for APPLE, this flag would
-// cause trouble for x64 target.
-
+// Enable FP16 intrinsics for Apple Silicon when building ARM64-only (not universal binary)
+// The original restriction was for universal binaries which would fail on x86_64.
+// When CMAKE_OSX_ARCHITECTURES=arm64, we can safely enable FP16 support.
 #define MLAS_F16VEC_INTRINSICS_SUPPORTED
 
-#endif //
 #endif // ARM64
 #endif // Visual Studio 16 or earlier does not support fp16 intrinsic
 
