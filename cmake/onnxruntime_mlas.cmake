@@ -482,42 +482,61 @@ else()
         set_source_files_properties(${MLAS_SRC_DIR}/sqnbitgemm_kernel_neon_int8_i8mm.cpp
 				    PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+i8mm ")
 
-        if (NOT APPLE)
-          set(mlas_platform_srcs
-            ${mlas_platform_srcs}
-            ${MLAS_SRC_DIR}/aarch64/HalfGemmKernelNeon.S
-            ${MLAS_SRC_DIR}/aarch64/QgemmS8S8KernelSmmla.S
-            ${MLAS_SRC_DIR}/aarch64/QgemmU8X8KernelUmmla.S
-            ${MLAS_SRC_DIR}/aarch64/SbgemmKernelNeon.S
-            ${MLAS_SRC_DIR}/activate_fp16.cpp
-            ${MLAS_SRC_DIR}/dwconv.cpp
-            ${MLAS_SRC_DIR}/halfgemm_kernel_neon.cpp
-            ${MLAS_SRC_DIR}/pooling_fp16.cpp
-            ${MLAS_SRC_DIR}/qgemm_kernel_smmla.cpp
-            ${MLAS_SRC_DIR}/qgemm_kernel_ummla.cpp
-            ${MLAS_SRC_DIR}/sbgemm_kernel_neon.cpp
-            ${MLAS_SRC_DIR}/cast_kernel_neon.cpp
-            ${MLAS_SRC_DIR}/hqnbitgemm_kernel_neon_fp16.cpp
-            ${MLAS_SRC_DIR}/rotary_embedding_kernel_neon_fp16.cpp
-            ${MLAS_SRC_DIR}/halfgemm_kernel_neon_fp16.cpp
-            ${MLAS_SRC_DIR}/softmax_kernel_neon_fp16.cpp
-            ${MLAS_SRC_DIR}/eltwise_kernel_neon_fp16.cpp
-          )
-          set_source_files_properties(${MLAS_SRC_DIR}/aarch64/HalfGemmKernelNeon.S PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
-          set_source_files_properties(${MLAS_SRC_DIR}/aarch64/QgemmS8S8KernelSmmla.S PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+i8mm ")
-          set_source_files_properties(${MLAS_SRC_DIR}/aarch64/QgemmU8X8KernelUmmla.S PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+i8mm ")
-          set_source_files_properties(${MLAS_SRC_DIR}/aarch64/SbgemmKernelNeon.S PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+bf16 ")
-          set_source_files_properties(${MLAS_SRC_DIR}/activate_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
-          set_source_files_properties(${MLAS_SRC_DIR}/dwconv.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
-          set_source_files_properties(${MLAS_SRC_DIR}/pooling_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
-          set_source_files_properties(${MLAS_SRC_DIR}/sbgemm_kernel_neon.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+bf16 ")
-          set_source_files_properties(${MLAS_SRC_DIR}/cast_kernel_neon.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
-          set_source_files_properties(${MLAS_SRC_DIR}/hqnbitgemm_kernel_neon_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
-          set_source_files_properties(${MLAS_SRC_DIR}/rotary_embedding_kernel_neon_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
-          set_source_files_properties(${MLAS_SRC_DIR}/halfgemm_kernel_neon_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
-          set_source_files_properties(${MLAS_SRC_DIR}/softmax_kernel_neon_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
-          set_source_files_properties(${MLAS_SRC_DIR}/eltwise_kernel_neon_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
-        endif()
+        # ==============================================================================
+        # Apple Silicon (M1/M2/M3) Optimizations
+        # ==============================================================================
+        # Enable FP16, I8MM, and BF16 optimizations for ARM64 including Apple Silicon
+        #
+        # Supported instruction sets on Apple Silicon:
+        #   - ARMv8.5-A+ architecture (M1/M2/M3)
+        #   - FP16 (half-precision floating point arithmetic)
+        #   - I8MM (int8 matrix multiply instructions - SMMLA/UMMLA)
+        #   - Dot product instructions (UDOT/SDOT)
+        #   - BF16 (bfloat16 on M2/M3, not M1)
+        #
+        # Runtime feature detection in platform.cpp ensures these optimizations
+        # are only used when the CPU supports them.
+        #
+        # Future optimization opportunities:
+        #   - Accelerate.framework integration: Apple's optimized BLAS/LAPACK library
+        #     could provide additional performance for certain operations
+        #   - Metal Performance Shaders: GPU acceleration beyond CoreML EP
+        #   - AMX (Apple Matrix coprocessor): Potential future support for M-series matrix operations
+        # ==============================================================================
+        set(mlas_platform_srcs
+          ${mlas_platform_srcs}
+          ${MLAS_SRC_DIR}/aarch64/HalfGemmKernelNeon.S
+          ${MLAS_SRC_DIR}/aarch64/QgemmS8S8KernelSmmla.S
+          ${MLAS_SRC_DIR}/aarch64/QgemmU8X8KernelUmmla.S
+          ${MLAS_SRC_DIR}/aarch64/SbgemmKernelNeon.S
+          ${MLAS_SRC_DIR}/activate_fp16.cpp
+          ${MLAS_SRC_DIR}/dwconv.cpp
+          ${MLAS_SRC_DIR}/halfgemm_kernel_neon.cpp
+          ${MLAS_SRC_DIR}/pooling_fp16.cpp
+          ${MLAS_SRC_DIR}/qgemm_kernel_smmla.cpp
+          ${MLAS_SRC_DIR}/qgemm_kernel_ummla.cpp
+          ${MLAS_SRC_DIR}/sbgemm_kernel_neon.cpp
+          ${MLAS_SRC_DIR}/cast_kernel_neon.cpp
+          ${MLAS_SRC_DIR}/hqnbitgemm_kernel_neon_fp16.cpp
+          ${MLAS_SRC_DIR}/rotary_embedding_kernel_neon_fp16.cpp
+          ${MLAS_SRC_DIR}/halfgemm_kernel_neon_fp16.cpp
+          ${MLAS_SRC_DIR}/softmax_kernel_neon_fp16.cpp
+          ${MLAS_SRC_DIR}/eltwise_kernel_neon_fp16.cpp
+        )
+        set_source_files_properties(${MLAS_SRC_DIR}/aarch64/HalfGemmKernelNeon.S PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
+        set_source_files_properties(${MLAS_SRC_DIR}/aarch64/QgemmS8S8KernelSmmla.S PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+i8mm ")
+        set_source_files_properties(${MLAS_SRC_DIR}/aarch64/QgemmU8X8KernelUmmla.S PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+i8mm ")
+        set_source_files_properties(${MLAS_SRC_DIR}/aarch64/SbgemmKernelNeon.S PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+bf16 ")
+        set_source_files_properties(${MLAS_SRC_DIR}/activate_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
+        set_source_files_properties(${MLAS_SRC_DIR}/dwconv.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
+        set_source_files_properties(${MLAS_SRC_DIR}/pooling_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
+        set_source_files_properties(${MLAS_SRC_DIR}/sbgemm_kernel_neon.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+bf16 ")
+        set_source_files_properties(${MLAS_SRC_DIR}/cast_kernel_neon.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
+        set_source_files_properties(${MLAS_SRC_DIR}/hqnbitgemm_kernel_neon_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
+        set_source_files_properties(${MLAS_SRC_DIR}/rotary_embedding_kernel_neon_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
+        set_source_files_properties(${MLAS_SRC_DIR}/halfgemm_kernel_neon_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
+        set_source_files_properties(${MLAS_SRC_DIR}/softmax_kernel_neon_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
+        set_source_files_properties(${MLAS_SRC_DIR}/eltwise_kernel_neon_fp16.cpp PROPERTIES COMPILE_FLAGS " -march=armv8.2-a+fp16 ")
 
         if(ONNXRUNTIME_MLAS_MULTI_ARCH)
             onnxruntime_add_static_library(onnxruntime_mlas_arm64 ${mlas_platform_srcs})
