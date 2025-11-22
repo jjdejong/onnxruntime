@@ -511,7 +511,6 @@ else()
           ${MLAS_SRC_DIR}/aarch64/SbgemmKernelNeon.S
           ${MLAS_SRC_DIR}/activate_fp16.cpp
           ${MLAS_SRC_DIR}/dwconv.cpp
-          ${MLAS_SRC_DIR}/halfgemm_kernel_neon.cpp
           ${MLAS_SRC_DIR}/pooling_fp16.cpp
           ${MLAS_SRC_DIR}/qgemm_kernel_smmla.cpp
           ${MLAS_SRC_DIR}/qgemm_kernel_ummla.cpp
