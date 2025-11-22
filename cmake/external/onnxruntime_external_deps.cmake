@@ -825,7 +825,13 @@ if(onnxruntime_USE_COREML)
   )
   onnxruntime_fetchcontent_makeavailable(psimd)
   set(PSIMD_SOURCE_DIR ${psimd_SOURCE_DIR})
-  onnxruntime_fetchcontent_declare(fp16 URL ${DEP_URL_fp16} URL_HASH SHA1=${DEP_SHA1_fp16} EXCLUDE_FROM_ALL)
+
+  onnxruntime_fetchcontent_declare(fp16
+    URL ${DEP_URL_fp16}
+    URL_HASH SHA1=${DEP_SHA1_fp16}
+    PATCH_COMMAND ${Patch_EXECUTABLE} --binary --ignore-whitespace -p1 < ${PROJECT_SOURCE_DIR}/patches/fp16/cmake_minimum_version.patch
+    EXCLUDE_FROM_ALL
+  )
   set(FP16_BUILD_TESTS OFF CACHE INTERNAL "")
   set(FP16_BUILD_BENCHMARKS OFF CACHE INTERNAL "")
   onnxruntime_fetchcontent_makeavailable(fp16)
