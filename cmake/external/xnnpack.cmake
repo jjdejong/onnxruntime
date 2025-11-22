@@ -1,3 +1,10 @@
+# Work around for psimd (XNNPACK dependency) requiring old CMake version
+# psimd's CMakeLists.txt has CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12) which is
+# no longer supported by modern CMake. This policy allows it to work.
+if(POLICY CMP0000)
+  cmake_policy(SET CMP0000 OLD)
+endif()
+
 set(XNNPACK_USE_SYSTEM_LIBS ON CACHE INTERNAL "")
 set(XNNPACK_BUILD_TESTS OFF CACHE INTERNAL "")
 set(XNNPACK_BUILD_BENCHMARKS OFF CACHE INTERNAL "")
