@@ -820,7 +820,7 @@ if(onnxruntime_USE_COREML)
   onnxruntime_fetchcontent_declare(psimd
     URL ${DEP_URL_psimd}
     URL_HASH SHA1=${DEP_SHA1_psimd}
-    PATCH_COMMAND ${Patch_EXECUTABLE} --binary --ignore-whitespace -p1 < ${PROJECT_SOURCE_DIR}/cmake/patches/psimd/cmake_minimum_version.patch
+    PATCH_COMMAND ${Patch_EXECUTABLE} --binary --ignore-whitespace -p1 < ${PROJECT_SOURCE_DIR}/patches/psimd/cmake_minimum_version.patch
     EXCLUDE_FROM_ALL
   )
   onnxruntime_fetchcontent_makeavailable(psimd)
